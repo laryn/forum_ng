@@ -19,7 +19,7 @@
 .view-forum-ng .forum-name .icon {
   background-image: url(images/forum-ng-icons.png);
   background-repeat: no-repeat;
-  float: left; /* LTR */
+  float: right; /* LTR */
   height: 24px;
   margin: 0 9px 0 0; /* LTR */
   width: 24px;
@@ -48,20 +48,6 @@
   height: 1.5em;
   border-left-color: #dee2ea;
   border-bottom-color: #dee2ea;
-}
-.view-forum-ng .forum-ng-indent .views-field-name a:after {
-  content: '';
-  display: block;
-  border: 0.125em solid transparent;
-  position: absolute;
-  top: 0.6875em;
-  left: 0.4375em;
-  width: 0.25em;
-  height: 0.25em;
-  transform: rotate(45deg);
-  transform-origin: right top;
-  border-top-color: #dee2ea;
-  border-right-color: #dee2ea;
 }
 
 .view-forum-ng-topic .topic-title-wrapper div {
