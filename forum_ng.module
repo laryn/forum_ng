@@ -382,6 +382,52 @@ function forum_ng_node_info() {
     )
   );
 }
+ 
+/**
+ * Implements hook_token_info().
+ */
+function forum_ng_token_info() {
+  $info['tokens']['node']['forum-ng-path'] = array(
+    'name' => t('Forum NG path tree'),
+    'description' => t('The hierarchical forum tree as a path.'),
+  );
+
+  return $info;
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function forum_ng_tokens($type, $tokens, array $data = array(), array $options = array()) {
+  $replacements = array();
+
+  if ($type == 'node' && !empty($data['node'])) {
+    $node = $data['node'];
+
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'forum-ng-path':
+         $tid = field_get_value($node, 'forum_ng_taxonomy', 'tid');
+          if ($parents = taxonomy_term_load_parents_all($tid)) {
+            $parents = array_reverse($parents);
+            foreach ($parents as $term) {
+              $parent_list[$term->tid] = $term->label();
+            }
+            module_load_include('inc', 'path');
+            $values = array();
+            foreach ($parent_list as $value) {
+              $value = path_clean_string((string) $value);
+              $values[] = $value;
+            }
+            $replacements[$original] = implode('/', $values);
+          }
+          break;
+      }
+    }
+  }
+
+  return $replacements;
+}
 
 /**
  * Implements hook_permission().
@@ -1139,8 +1185,6 @@ function template_preprocess_forum_ng_submitted(&$variables) {
     }
     $variables['author'] = theme('username', array('account' => $variables['topic']));
   }
-  else {
-  }
   $variables['time'] = isset($variables['topic']->created) ? format_interval(REQUEST_TIME - $variables['topic']->created) : '';
 }
 
@@ -1202,8 +1246,8 @@ function forum_ng_preprocess_views_view_field(&$variables) {
       foreach ($variables['view']->result as $delta => $forum) {
         if ($variables['view']->result[$delta]->field_forum_ng_taxonomy[0]['raw']['tid'] == $forum_tid) {
           // No need to show "Posted in" the same forum we're viewing.
-          $variables['view']->result[$delta]->field_forum_ng_taxonomy[0]['rendered']['#access'] = FALSE;
-          dpm($variables['view']->result[$delta]);
+          $variables['view']->result[$delta]->field_forum_ng_taxonomy[0]['rendered']['#access'] = FALSE ;
+          $variables['view']->result[$delta]->field_forum_ng_taxonomy[0]['rendered']['#markup'] = '';
         }
       }
     }
